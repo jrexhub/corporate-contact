@@ -13,8 +13,11 @@ class formClass
 	public $postData;
 	public $contentStatus = 'default';
 
-	protected $mailTo = 'info@j-rex.co.jp';//h.okada@j-rex.co.jp
+	protected $mailTo = 'info@j-rex.co.jp';
+	// protected $mailTo = 'h.okada@j-rex.co.jp';
 	// protected $mailBcc = 'jrex.okada@gmail.com';//jrex-it@j-rex.co.jp
+	protected $mailToBisinessMaster = 'y.nakamura@j-rex.co.jp';//中村部長
+	protected $mailToRentMaster = 't.negishi@j-rex.co.jp';//根岸部長
 	protected $mailSubject = '【J-REX WEBサイト】お問合わせがありました';
 	protected $mailCharset = 'UTF-8';
 	protected $inputPage = 'index.php';
@@ -85,6 +88,7 @@ class formClass
 				$this->all_session_destroy();
 				// ページ遷移
 				$this->location_to($this->get_indexpage_url());
+				exit;
 			}
 
 			//POSTデータをアンシリアライズ
@@ -110,7 +114,7 @@ class formClass
 			$mail_body .= "メールアドレス　: {$this->postData['mail']}\n";
 			$mail_body .= "お問合せ種別　　: {$this->postData['kind']}\n";
 			$mail_body .= "お問合せ内容　　: {$this->postData['comment']}\n";
-			$user_mail_body .= "\n";
+			$mail_body .= "\n";
 			$mail_body .= "==================================================\n";
 			$mail_body .= "date:" . date("Y/m/d(D)H:i:s", time()) . "\n";
 			$mail_body .= "ip:" . getenv('REMOTE_ADDR') . "\n";
@@ -146,6 +150,13 @@ class formClass
 			// mb_language("Japanese");
 
 			$params = '-f ' . 'info@j-rex.co.jp';
+
+			//送信先の追加
+			if ($this->postData['kind'] == "事業、サービスについて") {
+				$mail_to .= "," . $this->mailToBisinessMaster;
+			} elseif ($this->postData['kind'] == "居住中の物件について") {
+				$mail_to .= "," . $this->mailToRentMaster;
+			}
 
 			//メッセージ送信(to jrex)
 			$this->send_message($mail_to, $mail_subject, $mail_body, $mail_head, $params);
